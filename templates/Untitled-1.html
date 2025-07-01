@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction - Kakinada</title>
+</head>
+<body>
+    <h1>House Price Prediction</h1>
+    <p>Predict house prices in <strong>Kakinada</strong> based on various features.</p>
+
+    <form action="/predict" method="post">
+        <label>City:</label>
+        <input type="text" name="city" value="Kakinada" readonly><br>
+
+        <label>House Size (sq ft):</label>
+        <input type="number" name="house_size" required><br>
+
+        <label>Number of Bedrooms:</label>
+        <input type="number" name="bedrooms" required><br>
+
+        <label>Main Road (yes/no):</label>
+        <select name="mainroad" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br>
+
+        <label>Guest Room (yes/no):</label>
+        <select name="guestroom" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br>
+
+        <label>Basement (yes/no):</label>
+        <select name="basement" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br>
+
+        <label>Number of Parking Spaces:</label>
+        <input type="number" name="parking" required><br>
+
+        <label>Number of Floors:</label>
+        <input type="number" name="floors" required><br>
+
+        <button type="submit">Predict Price</button>
+    </form>
+
+    {% if prediction_text %}
+        <h2>{{ prediction_text }}</h2>
+    {% endif %}
+</body>
+</html>

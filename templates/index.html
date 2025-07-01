@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Prediction</title>
+    <style>
+        /* Reset Defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Full Page Styling */
+        body {
+            background: url('https://source.unsplash.com/1600x900/?luxury-car,automobile') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Form Container */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #ff5733;
+            box-shadow: 0 0 5px rgba(255, 87, 51, 0.5);
+        }
+
+        /* Button Styling */
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            color: white;
+            background: #ff5733;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #e74c3c;
+            transform: scale(1.05);
+        }
+
+        /* Result Box */
+        #result {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        async function predictPrice() {
+            let data = {
+                brand: document.getElementById('brand').value,
+                Year: parseInt(document.getElementById('year').value),
+                Present_Price: parseFloat(document.getElementById('present_price').value),
+                Kms_Driven: parseInt(document.getElementById('kms_driven').value),
+                fuel_type: document.getElementById('fuel_type').value,
+                Transmission: document.getElementById('transmission').value
+            };
+
+            try {
+                let response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                let result = await response.json();
+                if (result.error) {
+                    document.getElementById('result').innerText = 'Error: ' + result.error;
+                } else {
+                    document.getElementById('result').innerText = 'Predicted Selling Price: ₹' + result.selling_price + ' Lakhs';
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error: ' + error;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>🚗 Car Price Prediction</h2>
+        
+        <div class="form-group">
+            <label for="brand">Car Brand:</label>
+            <input type="text" id="brand">
+        </div>
+
+        <div class="form-group">
+            <label for="year">Year:</label>
+            <input type="number" id="year">
+        </div>
+
+        <div class="form-group">
+            <label for="present_price">Present Price (in Lakhs):</label>
+            <input type="number" id="present_price">
+        </div>
+
+        <div class="form-group">
+            <label for="kms_driven">Kms Driven:</label>
+            <input type="number" id="kms_driven">
+        </div>
+
+        <div class="form-group">
+            <label for="fuel_type">Fuel Type:</label>
+            <select id="fuel_type">
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="transmission">Transmission:</label>
+            <select id="transmission">
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+            </select>
+        </div>
+
+        <button onclick="predictPrice()">🚀 Predict Price</button>
+        <p id="result"></p>
+    </div>
+</body>
+</html>
