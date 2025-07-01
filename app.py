@@ -2,11 +2,12 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import joblib
 import pandas as pd
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
-# Load trained model and columns
+# Load trained model and model columns
 model = joblib.load("car_price_model.pkl")
 model_columns = joblib.load("model_columns.pkl")
 
@@ -20,10 +21,10 @@ def predict():
         # Get JSON data from request
         data = request.get_json()
 
-        # Convert JSON input into a DataFrame
+        # Convert input to DataFrame
         features = pd.DataFrame([data])
 
-        # Convert categorical inputs to numerical values
+        # Map categorical inputs to numerical values
         fuel_mapping = {"Petrol": 0, "Diesel": 1}
         transmission_mapping = {"Manual": 0, "Automatic": 1}
 
@@ -35,21 +36,23 @@ def predict():
         # One-hot encode the 'brand' column
         features = pd.get_dummies(features, columns=["brand"], drop_first=True)
 
-        # Ensure columns match training data
+        # Add missing columns with 0
         for col in model_columns:
             if col not in features:
-                features[col] = 0  # Add missing columns with value 0
+                features[col] = 0
 
-        # Reorder columns to match model's training data
+        # Reorder columns to match model input
         features = features[model_columns]
 
         # Make prediction
         prediction = model.predict(features)[0]
 
         return jsonify({"selling_price": round(prediction, 2)})
-    
-    except Exception as e:
-        return jsonify({"error": str(e)})  # Return error message
 
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# ✅ Render Deployment Fix — Use correct host and port
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Render sets the PORT env variable
+    app.run(host="0.0.0.0", port=port, debug=True)
